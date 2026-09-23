@@ -1,8 +1,6 @@
 //
 #include <fstream>
 #include <string>
-#include <sstream>
-#include <iomanip>
 #include <iostream>
 //
 using namespace std ;
@@ -27,19 +25,60 @@ int main( int argc , char* argv[] )
     upper-left at (8,264) and (264,8)
     
     
+        P6
+        480 480
+        255
+        �
+
     */
-    uchar    img[512][512] ;
+    ifstream file("teacup.pgm");
+    string format;
+    int width, height, maxVal;
+    file >> format >> width >> height >> maxVal;
+    file.ignore(1); // whitespace 
+
+    uchar    img[512][512];
+    uchar teapot[480][480];
+
+    for (int r = 0;r<480;r++)
+        {
+            for (int c = 0; c<480;c++)
+            {
+                int red   = file.get();
+                int green = file.get();
+                int blue  = file.get();
+                teapot[r][c] = (uchar)((red + green + blue) / 3);
+            }
+        }
     //
-    //
+    //'''
+    // teapot, where you draw black instead draw gray 127 and
+    //  where you draw white instead draw nothing and the background gradient will show through'''
     for( int c = 0 ; c < 512 ; c++ )
     {
         for( int r = 0 ; r < 512 ; r++ )
             {
-                img[r][c]=(uchar)126;
-                   
-                //upper left corner of 64x64 at 64,64
-                //upper left corner of 64x64 at 384,64
-                //color 127
+                if (c >7 && c<248  && r <504 && r>263)
+                    {
+                        uchar number = 255-r/2;
+                        img[r][c]=(uchar)number;
+                        if (teapot[(r-264)*2][(c-8)*2]==(uchar)0)
+                            img[r][c]=(uchar)127;
+                        //img[r][c]=(uchar)teapot[(r-264)*2][(c-8)*2];
+                    }
+                else if (r >7 && r<248  && c<504 && c>263)
+                    {
+                        uchar number = 255-r/2;
+                        img[r][c]=(uchar)number;
+                        if (teapot[(r-8)*2][(c-264)*2]==(uchar)0)
+                            img[r][c]=(uchar)127;
+                        //img[r][c]=(uchar)teapot[(r-8)*2][(c-264)*2];
+                    }
+                else
+                    {
+                        uchar number = 255-r/2;
+                        img[r][c] = (uchar)number;
+                    }
         }
     }
     //
@@ -54,13 +93,13 @@ void save( uchar img[][512] )
     ofstream fout          ;
     //
     //
-    fout . open( "teacup.pgm" ) ;
+    fout . open( "teacupmodded.pgm") ;
     //
     fout << "P5" << endl ;
     //
-    fout << "512 384" << endl << "255" << endl ;
+    fout << "512 512" << endl << "255" << endl ;
     //
-    for( int r = 0 ; r < 384 ; r++ )
+    for( int r = 0 ; r < 512 ; r++ )
     {
         for( int c = 0 ; c < 512 ; c++ )
         {

@@ -74,10 +74,7 @@ int main( int argc , char* argv[] )
                     else
                         img[r][c]=(uchar)3;
             }
-            
-            
-                      
-            
+
             
             /*if(H/2/10== r/10 || H/2/10== r/10+1)
                 img[r][c] =(uchar)1;
