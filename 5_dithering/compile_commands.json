@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/charlieprice/Google Drive/My Drive/Computer Vision/5_dithering",
+  "command": "/usr/bin/c++  -isystem /opt/homebrew/Cellar/opencv/5.0.0_11/include/opencv5  -arch arm64 -o CMakeFiles/run_me.dir/current_file.cpp.o -c \"/Users/charlieprice/Library/CloudStorage/GoogleDrive-1933641@fcpsschools.net/My Drive/Computer Vision/5_dithering/current_file.cpp\"",
+  "file": "/Users/charlieprice/Library/CloudStorage/GoogleDrive-1933641@fcpsschools.net/My Drive/Computer Vision/5_dithering/current_file.cpp",
+  "output": "CMakeFiles/run_me.dir/current_file.cpp.o"
+}
+]
