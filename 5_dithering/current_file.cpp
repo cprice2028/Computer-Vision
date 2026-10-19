@@ -25,15 +25,15 @@ int main( int argc , char* argv[] )
    for (int r=0;r<rows;r++){
       for(int c=0;c<cols;c++){
          Vec3b pixel=img.at<Vec3b>(r, c);
-         int pix = (pixel(0)+pixel(1)+pixel(2))/3-((pixel(0)*.11+pixel(1)*.59+pixel(2)*.30)/3);
+         double avg = (pixel(0)+pixel(1)+pixel(2))/3.0;
+         double avgscaled=(pixel(0)*.11+pixel(1)*.59+pixel(2)*.30);
+         int pix = abs(int(avg-avgscaled));
          //cout<<pix<<endl;
          if (pix<=minp){
             minp=pix;
-            cout<<pix<<endl;
          }
          if (pix>=maxp){
             maxp=pix;
-            cout<<pix<<endl;
          }
          pixels[r][c]=pix;
       }
