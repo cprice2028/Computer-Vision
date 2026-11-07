@@ -27,7 +27,7 @@ int main( int argc , char* argv[] )
          Vec3b pixel=img.at<Vec3b>(r, c);
          double avg = (pixel(0)+pixel(1)+pixel(2))/3.0;
          double avgscaled=(pixel(0)*.11+pixel(1)*.59+pixel(2)*.30);
-         int pix = abs(int(avg-avgscaled));
+         int pix = int(avg-avgscaled);
          //cout<<pix<<endl;
          if (pix<=minp){
             minp=pix;

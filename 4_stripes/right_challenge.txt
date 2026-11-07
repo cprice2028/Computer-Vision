@@ -1,0 +1,170 @@
+//
+#include <fstream>
+#include <iostream>
+#include <vector>
+//
+using namespace std ;
+//
+typedef unsigned char uchar ;
+//
+const int W = 640 ;
+const int H = 480;
+//
+void save( uchar img[][W] )
+{
+    ofstream fout;
+    //
+    fout . open( "right_challenge.ppm" ) ;
+    //
+    fout << "P6" << endl ;
+    //
+    fout << W << " " << H << endl << "255" << endl ;
+    //
+    for( int r = 0 ; r < H ; r++ )
+    {
+        for( int c = 0 ; c < W ; c++ )
+        {
+            if( img[r][c] == 1 )       // Black
+            {
+               fout << (uchar)0 << (uchar)0   << (uchar)0  << flush ;
+            }
+            else if( img[r][c] == 2 )  // Gray
+            {
+               fout << (uchar)127  << (uchar)127 << (uchar)127  << flush ;
+            }
+            else                       // white
+            {
+               fout << (uchar)255 << (uchar)255 << (uchar)255 << flush ;
+            }
+        }
+    }
+
+    //
+    fout . close() ;
+}
+
+void drawLine(uchar img[][W],int x1, int x2, int y1, int y2){
+    int dx=x2-x1;
+    int dy=y2-y1;
+    int steps = max(abs(dx),abs(dy));
+
+    double x_increase = (double)(x2-x1)/steps;
+    double y_increase=(double)(y2-y1)/steps;
+
+    double x = x1;
+    double y=y1;
+    for (int i =0;i<=steps;i++){
+        int r = static_cast<int>(y + 0.5);
+        int c = static_cast<int>(x + 0.5);
+        if (r >= 0 && r < H && c >= 0 && c < W) {
+            img[r][c] = (uchar)1;
+        }
+        x += x_increase;
+        y += y_increase;
+    }
+}
+//
+int main( int argc , char* argv[] )
+{
+    uchar img[H][W] ;
+    /*
+        black-and-white 640-by-480 image.
+
+        read points (x,y) from TXT file
+        determine the number of points
+        determine max + min (x,y) values
+
+        then...
+        draw a point (r,c) for each (x,y)
+        points black + background white
+        e except background instead 127 gray
+        between y=380_000 and y=410_000
+
+        leave a 5% buffer along the border
+        ignore the true aspect ratio
+        scale by (x - xmin) / (xmax - xmin)
+
+        hint: don't draw the y upside down!
+        13510 points
+        END
+    */
+    
+    // 
+    ifstream fin;
+    fin.open("long_lat.txt");
+    double x;
+    double y;
+    double maxx=-99999999999999999.00,maxy=-9999999999999999.00;
+    double miny=999999999999999999.00,minx=9999999999999999999.00;
+    int polygon = 0;
+    vector<vector<double>> xlist;
+    vector<vector<double>> ylist;
+    xlist.push_back(vector<double>());
+    ylist.push_back(vector<double>());
+    while (fin>>x){
+        fin>>y;
+        if(y!=999.0&& x!=999.0){
+            if (maxx<x)
+                maxx=x;
+            else if (minx>=x)
+                minx=x;
+            if (maxy<y)
+                maxy=y;
+            else if (miny>=y)
+                miny=y;
+            xlist[polygon].push_back(x);
+            ylist[polygon].push_back(y);
+        }
+        else{
+            xlist.push_back(vector<double>());
+            ylist.push_back(vector<double>());
+            polygon++;
+        }
+    }
+    for (int r = 0;r<H;r++)
+        {
+            for (int c = 0; c<W;c++)
+            {
+                img[r][c]=(uchar)3;
+            }
+        }
+    int y_cord_prev;
+    int x_cord_prev;
+    for (int polynum=0;polynum<polygon;polynum++){
+        for (int i=0;i<xlist[polynum].size();i++){
+            double x=xlist[polynum][i];
+            double y=ylist[polynum][i];
+            double scaled_x = (x-minx)/(maxx-minx)*W*.9 + W*0.05;
+            double scaled_y_not_flipped=(y-miny)/(maxy-miny)*H*.9 + H*0.05;
+            double scaled_y=H-scaled_y_not_flipped;
+            int y_cord=static_cast<int>(scaled_y);
+            int x_cord=static_cast<int>(scaled_x);
+            img[y_cord][x_cord]=(uchar)1;
+            if (i>0){
+                y_cord_prev=static_cast<int>(H-((ylist[polynum][i-1]-miny)/(maxy-miny)*H*.9+H*0.05));
+                x_cord_prev=static_cast<int>((xlist[polynum][i-1]-minx)/(maxx-minx)*W*.9+W*0.05);
+                drawLine(img,x_cord_prev,x_cord,y_cord_prev,y_cord);
+            }
+            
+        }
+        double x=xlist[polynum][xlist[polynum].size()-1];
+        double y=ylist[polynum][xlist[polynum].size()-1];
+        double scaled_x = (x-minx)/(maxx-minx)*W*.9 + W*0.05;
+        double scaled_y_not_flipped=(y-miny)/(maxy-miny)*H*.9 + H*0.05;
+        double scaled_y=H-scaled_y_not_flipped;
+        int y_cord=static_cast<int>(scaled_y);
+        int x_cord=static_cast<int>(scaled_x);
+        y_cord_prev=static_cast<int>(H-((ylist[polynum][0]-miny)/(maxy-miny)*H*.9+H*0.05));
+        x_cord_prev=static_cast<int>((xlist[polynum][0]-minx)/(maxx-minx)*W*.9+W*0.05);
+        drawLine(img,x_cord_prev,x_cord,y_cord_prev,y_cord);
+    }
+    
+    //
+    save( img ) ;
+    //
+    return 0 ;
+}
+
+//
+// end
+//
